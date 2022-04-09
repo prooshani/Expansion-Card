@@ -39,6 +39,7 @@ class ExpansionCard extends StatefulWidget {
     this.color,
     this.expansionArrowColor,
     this.topMargin = 55,
+    this.borderRadius = 20,
   }) : super(key: key);
 
   final String? gif;
@@ -86,18 +87,19 @@ class ExpansionCard extends StatefulWidget {
   /// default is 55
   final double topMargin;
 
+  /// The Border Radius of the expansion card
+  ///
+  /// default is 20
+  final double borderRadius;
+
   @override
   _ExpansionTileState createState() => _ExpansionTileState();
 }
 
-class _ExpansionTileState extends State<ExpansionCard>
-    with SingleTickerProviderStateMixin {
-  static final Animatable<double> _easeOutTween =
-      CurveTween(curve: Curves.easeOut);
-  static final Animatable<double> _easeInTween =
-      CurveTween(curve: Curves.easeIn);
-  static final Animatable<double> _halfTween =
-      Tween<double>(begin: 0.0, end: 0.5);
+class _ExpansionTileState extends State<ExpansionCard> with SingleTickerProviderStateMixin {
+  static final Animatable<double> _easeOutTween = CurveTween(curve: Curves.easeOut);
+  static final Animatable<double> _easeInTween = CurveTween(curve: Curves.easeIn);
+  static final Animatable<double> _halfTween = Tween<double>(begin: 0.0, end: 0.5);
 
   final ColorTween _borderColorTween = ColorTween();
   final ColorTween _headerColorTween = ColorTween();
@@ -121,11 +123,9 @@ class _ExpansionTileState extends State<ExpansionCard>
     _iconTurns = _controller.drive(_halfTween.chain(_easeInTween));
     _headerColor = _controller.drive(_headerColorTween.chain(_easeInTween));
     _iconColor = _controller.drive(_iconColorTween.chain(_easeInTween));
-    _backgroundColor =
-        _controller.drive(_backgroundColorTween.chain(_easeOutTween));
+    _backgroundColor = _controller.drive(_backgroundColorTween.chain(_easeOutTween));
 
-    _isExpanded =
-        PageStorage.of(context)?.readState(context) ?? widget.initiallyExpanded;
+    _isExpanded = PageStorage.of(context)?.readState(context) ?? widget.initiallyExpanded;
     if (_isExpanded) _controller.value = 1.0;
   }
 
@@ -150,8 +150,7 @@ class _ExpansionTileState extends State<ExpansionCard>
       }
       PageStorage.of(context)?.writeState(context, _isExpanded);
     });
-    if (widget.onExpansionChanged != null)
-      widget.onExpansionChanged!(_isExpanded);
+    if (widget.onExpansionChanged != null) widget.onExpansionChanged!(_isExpanded);
   }
 
   Widget _buildChildren(BuildContext context, Widget? child) {
@@ -161,10 +160,9 @@ class _ExpansionTileState extends State<ExpansionCard>
       children: <Widget>[
         widget.gif != null
             ? ClipRRect(
-                borderRadius: BorderRadius.circular(30.0),
+                borderRadius: BorderRadius.circular(widget.borderRadius),
                 child: Align(
-                  heightFactor:
-                      _heightFactor.value < 0.5 ? 0.5 : _heightFactor.value,
+                  heightFactor: _heightFactor.value < 0.5 ? 0.5 : _heightFactor.value,
                   child: Image.asset(
                     widget.gif!,
                     fit: BoxFit.cover,
